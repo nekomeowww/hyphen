@@ -47,8 +47,6 @@ func NewAPI(addr string) func(NewAPIParam) *API {
 
 func Run() func(logger *lib.Logger, api *API) error {
 	return func(logger *lib.Logger, api *API) error {
-		fmt.Printf("%#v\n", api)
-
 		logger.Info("starting api server...")
 		listener, err := net.Listen("tcp", api.Addr)
 		if err != nil {
