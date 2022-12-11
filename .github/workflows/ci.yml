@@ -1,4 +1,4 @@
-name: 单元测试 Unit Test
+name: Testing
 
 on:
   push:
