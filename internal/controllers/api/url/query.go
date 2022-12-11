@@ -35,7 +35,7 @@ func (c *Controller) QueryURL(ctx echo.Context) (handler.Response, error) {
 
 	result := c.URLs.FindOneShortURLByURL(param.URL)
 	if result.IsError() {
-		return nil, rfc7807.Wrap(http.StatusInternalServerError, "database error", result.Error())
+		return nil, rfc7807.Wrap(rfc7807.Internal, "database error", result.Error())
 	}
 	if result.MustGet() == "" {
 		return nil, rfc7807.New(rfc7807.NotFound, "not found")
@@ -69,7 +69,7 @@ func (c *Controller) QueryShortURL(ctx echo.Context) (handler.Response, error) {
 
 	result := c.URLs.FindOneURLByShortURL(param.URL)
 	if result.IsError() {
-		return nil, rfc7807.Wrap(http.StatusInternalServerError, "database error", result.Error())
+		return nil, rfc7807.Wrap(rfc7807.Internal, "database error", result.Error())
 	}
 	if result.MustGet() == "" {
 		return nil, rfc7807.New(rfc7807.NotFound, "not found")
