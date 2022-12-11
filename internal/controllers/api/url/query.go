@@ -22,15 +22,15 @@ func (c *Controller) QueryURL(ctx echo.Context) (handler.Response, error) {
 	var param QueryURLParam
 	err := ctx.Bind(&param)
 	if err != nil {
-		return nil, rfc7807.New(http.StatusBadRequest, fmt.Sprintf("invalid params: %v", err))
+		return nil, rfc7807.New(rfc7807.InvalidArgument, fmt.Sprintf("invalid params: %v", err))
 	}
 	if param.URL == "" {
-		return nil, rfc7807.New(http.StatusBadRequest, "url must not be empty")
+		return nil, rfc7807.New(rfc7807.InvalidArgument, "url must not be empty")
 	}
 
 	param.URL, err = c.URLs.NormalizeURL(param.URL)
 	if err != nil {
-		return nil, rfc7807.New(http.StatusBadRequest, fmt.Sprintf("invalid url: %v", err))
+		return nil, rfc7807.New(rfc7807.InvalidArgument, fmt.Sprintf("invalid url: %v", err))
 	}
 
 	result := c.URLs.FindOneShortURLByURL(param.URL)
@@ -38,7 +38,7 @@ func (c *Controller) QueryURL(ctx echo.Context) (handler.Response, error) {
 		return nil, rfc7807.Wrap(http.StatusInternalServerError, "database error", result.Error())
 	}
 	if result.MustGet() == "" {
-		return nil, rfc7807.New(http.StatusNotFound, "not found")
+		return nil, rfc7807.New(rfc7807.NotFound, "not found")
 	}
 
 	return &QueryURLResp{
@@ -59,12 +59,12 @@ func (c *Controller) QueryShortURL(ctx echo.Context) (handler.Response, error) {
 	var param QueryShortURLParam
 	err := ctx.Bind(&param)
 	if err != nil {
-		return nil, rfc7807.New(http.StatusBadRequest, fmt.Sprintf("invalid params: %v", err))
+		return nil, rfc7807.New(rfc7807.InvalidArgument, fmt.Sprintf("invalid params: %v", err))
 	}
 
 	param.URL, err = url.QueryUnescape(param.URL)
 	if err != nil {
-		return nil, rfc7807.New(http.StatusBadRequest, fmt.Sprintf("invalid url: %v", err))
+		return nil, rfc7807.New(rfc7807.InvalidArgument, fmt.Sprintf("invalid url: %v", err))
 	}
 
 	result := c.URLs.FindOneURLByShortURL(param.URL)
@@ -72,7 +72,7 @@ func (c *Controller) QueryShortURL(ctx echo.Context) (handler.Response, error) {
 		return nil, rfc7807.Wrap(http.StatusInternalServerError, "database error", result.Error())
 	}
 	if result.MustGet() == "" {
-		return nil, rfc7807.New(http.StatusNotFound, "not found")
+		return nil, rfc7807.New(rfc7807.NotFound, "not found")
 	}
 	if param.Redirect {
 		return nil, ctx.Redirect(http.StatusFound, result.MustGet())

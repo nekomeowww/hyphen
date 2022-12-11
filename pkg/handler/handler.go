@@ -21,7 +21,7 @@ func NewHandler(handlerFunc func(echo.Context) (Response, error)) echo.HandlerFu
 			case *rfc7807.ProblemDetail:
 				return ctx.JSON(v.Status, v)
 			default:
-				return ctx.JSON(http.StatusInternalServerError, rfc7807.Wrap(http.StatusInternalServerError, "unknown error occurred", v))
+				return ctx.JSON(http.StatusInternalServerError, rfc7807.Wrap(rfc7807.Internal, "unknown error occurred", v))
 			}
 		}
 
