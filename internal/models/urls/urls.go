@@ -3,14 +3,19 @@ package urls
 import (
 	"bytes"
 	"context"
+	"crypto/sha512"
 	"encoding/base64"
+	"encoding/json"
+	"fmt"
 	"net/url"
 	"time"
 
 	"github.com/nekomeowww/hyphen/internal/dao"
 	"github.com/nekomeowww/hyphen/internal/lib"
 	"github.com/nekomeowww/hyphen/pkg/types/dao/bbolt/keys"
+	urlsType "github.com/nekomeowww/hyphen/pkg/types/dao/bbolt/urls"
 	"github.com/nekomeowww/hyphen/pkg/utils"
+	"github.com/samber/lo"
 	"github.com/samber/mo"
 	"go.etcd.io/bbolt"
 	"go.uber.org/fx"
@@ -53,15 +58,17 @@ func (m *URLModel) NormalizeURL(urlString string) (string, error) {
 }
 
 func (m *URLModel) saveNewURL(tx *bbolt.Tx, bucket *bbolt.Bucket, fullURL string) mo.Result[string] {
-	hash := utils.RandomHashString(10)
-
+	hash := fmt.Sprintf("%x", sha512.Sum512([]byte(fullURL)))[0:10]
 	base64URL := base64.StdEncoding.EncodeToString([]byte(fullURL))
-	err := bucket.Put(keys.FullURL2.Format(base64URL, hash), []byte(hash))
+
+	base64EncodedShortURL := base64.StdEncoding.EncodeToString(lo.Must(json.Marshal(urlsType.ShortURL{ShortURL: hash, FullURL: fullURL})))
+	err := bucket.Put(keys.FullURL1.Format(base64URL), []byte(base64EncodedShortURL))
 	if err != nil {
 		return mo.Err[string](err)
 	}
 
-	err = bucket.Put(keys.ShortenedURL1.Format(hash), []byte(base64URL))
+	base64EncodedFullURL := base64.StdEncoding.EncodeToString(lo.Must(json.Marshal(urlsType.FullURL{ShortURL: hash, FullURL: fullURL})))
+	err = bucket.Put(keys.ShortenedURL1.Format(hash), []byte(base64EncodedFullURL))
 	if err != nil {
 		return mo.Err[string](err)
 	}
@@ -104,10 +111,10 @@ func (m *URLModel) New(fullURL string) mo.Result[string] {
 	return result
 }
 
-func (m *URLModel) FindOneShortURLByURL(url string) mo.Result[string] {
+func (m *URLModel) FindOneShortURLByURL(url string) mo.Result[urlsType.ShortURL] {
 	tx, err := m.BBolt.Begin(false)
 	if err != nil {
-		return mo.Err[string](err)
+		return mo.Err[urlsType.ShortURL](err)
 	}
 	defer func() {
 		err = tx.Rollback()
@@ -119,23 +126,34 @@ func (m *URLModel) FindOneShortURLByURL(url string) mo.Result[string] {
 
 	bucket := tx.Bucket(keys.URLBucket.Format())
 	if bucket == nil {
-		return mo.Ok("")
+		return mo.Ok(urlsType.ShortURL{})
 	}
 
-	base64URL := base64.StdEncoding.EncodeToString([]byte(url))
-	prefix := keys.FullURL2.Format(base64URL, "")
+	var foundShortURL []byte
+	prefix := keys.FullURL1.Format(base64.StdEncoding.EncodeToString([]byte(url)))
 	cursor := bucket.Cursor()
 	for k, v := cursor.Seek(prefix); k != nil && bytes.HasPrefix(k, prefix); k, v = cursor.Next() {
-		return mo.Ok(string(v))
+		foundShortURL = v
+		break
+	}
+	if string(foundShortURL) == "" {
+		return mo.Ok(urlsType.ShortURL{})
 	}
 
-	return mo.Ok("")
+	decodedShortURL, err := base64.StdEncoding.DecodeString(string(foundShortURL))
+	if err != nil {
+		return mo.Err[urlsType.ShortURL](err)
+	}
+
+	var shortURL urlsType.ShortURL
+	lo.Must0(json.Unmarshal(decodedShortURL, &shortURL))
+	return mo.Ok(shortURL)
 }
 
-func (m *URLModel) FindOneURLByShortURL(shortURL string) mo.Result[string] {
+func (m *URLModel) FindOneURLByShortURL(shortURL string) mo.Result[urlsType.FullURL] {
 	tx, err := m.BBolt.Begin(false)
 	if err != nil {
-		return mo.Err[string](err)
+		return mo.Err[urlsType.FullURL](err)
 	}
 	defer func() {
 		err = tx.Rollback()
@@ -147,16 +165,22 @@ func (m *URLModel) FindOneURLByShortURL(shortURL string) mo.Result[string] {
 
 	bucket := tx.Bucket(keys.URLBucket.Format())
 	if bucket == nil {
-		return mo.Ok("")
+		return mo.Ok(urlsType.FullURL{})
 	}
 
 	foundUrl := bucket.Get(keys.ShortenedURL1.Format(shortURL))
-	decodedURL, err := base64.StdEncoding.DecodeString(string(foundUrl))
-	if err != nil {
-		return mo.Err[string](err)
+	if string(foundUrl) == "" {
+		return mo.Ok(urlsType.FullURL{})
 	}
 
-	return mo.Ok(string(decodedURL))
+	decodedURL, err := base64.StdEncoding.DecodeString(string(foundUrl))
+	if err != nil {
+		return mo.Err[urlsType.FullURL](err)
+	}
+
+	var fullURL urlsType.FullURL
+	lo.Must0(json.Unmarshal(decodedURL, &fullURL))
+	return mo.Ok(fullURL)
 }
 
 func (m *URLModel) RevokeOneShortURL(shortURL string) mo.Result[bool] {
@@ -176,13 +200,13 @@ func (m *URLModel) RevokeOneShortURL(shortURL string) mo.Result[bool] {
 		_ = tx.Rollback()
 		return mo.Err[bool](result.Error())
 	}
-	if result.MustGet() == "" {
+	if result.MustGet().FullURL == "" {
 		_ = tx.Rollback()
 		return mo.Ok(true)
 	}
 
-	base64URL := base64.StdEncoding.EncodeToString([]byte(result.MustGet()))
-	err = bucket.Delete(keys.FullURL2.Format(base64URL, shortURL))
+	base64URL := base64.StdEncoding.EncodeToString([]byte(result.MustGet().FullURL))
+	err = bucket.Delete(keys.FullURL1.Format(base64URL))
 	if err != nil {
 		_ = tx.Rollback()
 		return mo.Err[bool](err)

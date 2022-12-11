@@ -63,14 +63,14 @@ func TestURLs(t *testing.T) {
 			require.NoError(foundURLResult.Error())
 
 			foundURL := foundURLResult.MustGet()
-			assert.Equal(fullURL, foundURL)
+			assert.Equal(fullURL, foundURL.FullURL)
 		})
 		t.Run("ShortURL", func(t *testing.T) {
 			foundShortURLResult := urls.FindOneShortURLByURL(fullURL)
 			require.NoError(foundShortURLResult.Error())
 
 			foundShortURL := foundShortURLResult.MustGet()
-			assert.Equal(hash, foundShortURL)
+			assert.Equal(hash, foundShortURL.ShortURL)
 		})
 	})
 }
@@ -90,9 +90,9 @@ func TestRevokeShortURL(t *testing.T) {
 
 	foundURLResult := urls.FindOneURLByShortURL(hash)
 	require.NoError(foundURLResult.Error())
-	assert.Empty(foundURLResult.MustGet())
+	assert.Empty(foundURLResult.MustGet().FullURL)
 
 	foundShortURLResult := urls.FindOneShortURLByURL(fullURL)
 	require.NoError(foundShortURLResult.Error())
-	assert.Empty(foundShortURLResult.MustGet())
+	assert.Empty(foundShortURLResult.MustGet().ShortURL)
 }

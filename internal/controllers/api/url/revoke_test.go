@@ -28,7 +28,7 @@ func TestRevoke(t *testing.T) {
 	require.NoError(err)
 	require.NotNil(r)
 
-	result = controller.URLs.FindOneURLByShortURL(result.MustGet())
-	require.NoError(result.Error())
-	assert.Empty(result.MustGet())
+	findResult := controller.URLs.FindOneURLByShortURL(result.MustGet())
+	require.NoError(findResult.Error())
+	assert.Empty(findResult.MustGet().FullURL)
 }

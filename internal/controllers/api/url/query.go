@@ -37,12 +37,12 @@ func (c *Controller) QueryURL(ctx echo.Context) (handler.Response, error) {
 	if result.IsError() {
 		return nil, rfc7807.Wrap(rfc7807.Internal, "database error", result.Error())
 	}
-	if result.MustGet() == "" {
+	if result.MustGet().ShortURL == "" {
 		return nil, rfc7807.New(rfc7807.NotFound, "not found")
 	}
 
 	return &QueryURLResp{
-		ShortURL: result.MustGet(),
+		ShortURL: result.MustGet().ShortURL,
 	}, nil
 }
 
@@ -71,14 +71,14 @@ func (c *Controller) QueryShortURL(ctx echo.Context) (handler.Response, error) {
 	if result.IsError() {
 		return nil, rfc7807.Wrap(rfc7807.Internal, "database error", result.Error())
 	}
-	if result.MustGet() == "" {
+	if result.MustGet().FullURL == "" {
 		return nil, rfc7807.New(rfc7807.NotFound, "not found")
 	}
 	if param.Redirect {
-		return nil, ctx.Redirect(http.StatusFound, result.MustGet())
+		return nil, ctx.Redirect(http.StatusFound, result.MustGet().FullURL)
 	}
 
 	return &QueryShortURLResp{
-		URL: result.MustGet(),
+		URL: result.MustGet().FullURL,
 	}, nil
 }

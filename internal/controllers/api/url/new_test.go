@@ -2,13 +2,16 @@ package url
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/nekomeowww/hyphen/pkg/handler"
 	"github.com/nekomeowww/hyphen/pkg/types/dao/bbolt/keys"
+	"github.com/nekomeowww/hyphen/pkg/types/dao/bbolt/urls"
 	"github.com/nekomeowww/hyphen/pkg/utils"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -43,5 +46,8 @@ func TestNew(t *testing.T) {
 
 	url, err := base64.StdEncoding.DecodeString(string(value))
 	require.NoError(err)
-	assert.Equal(resp.URL, string(url))
+
+	var fullURL urls.FullURL
+	lo.Must0(json.Unmarshal(url, &fullURL))
+	assert.Equal(resp.URL, fullURL.FullURL)
 }

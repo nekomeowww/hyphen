@@ -13,9 +13,9 @@ func (k Key) Format(params ...interface{}) []byte {
 var (
 	URLBucket = Key("urls")
 
-	// FullURL2
-	// params: url 和 短链接 hash
-	FullURL2 Key = "url/full/%s/%s"
+	// FullURL1
+	// params: url
+	FullURL1 Key = "url/full/%s"
 
 	// ShortenedURL1
 	// params: hash

@@ -50,9 +50,11 @@ docker buildx build --platform <your/arch> -t <tag> --build-arg VERSION=<version
 
 ### `GET` `/api/v1/url/full`
 
+Query one short URL by original URL.
+
 Query Params:
 
-- `url` `String`  (required): Full URL
+- `url` `String`  (required): original URL
 
 Response:
 
@@ -64,10 +66,12 @@ Response:
 
 ### `GET` `/api/v1/url/short`
 
+Query one original URL by short URL.
+
 Query Params:
 
 - `url` `String` (required): Short URL
-- `redirect` `Boolean`: Redirect to the full URL automatically
+- `redirect` `Boolean`: Whether to redirect to the original URL automatically (by returning `301 Permanently Moved`)
 
 Response:
 
@@ -78,6 +82,9 @@ Response:
 ```
 
 ### `POST` `/api/v1/url`
+
+Create a new URL. The short URL will be created based on the first 10 letter of sha512 hash of
+the original URL.
 
 Body Params:
 
@@ -97,6 +104,12 @@ Response:
 ```
 
 ### `DELETE` `/api/v1/url`
+
+Revoke the short URL that created in the past.
+
+**NOTICE: since `hyphen` is creating short URL base on the sha512 hash of the original URL,
+revoke will disconnect all the original URL to the short URL that revoked, however, you could
+create a new one to reconnect them together, it will return the same short URL as before.**
 
 Body Params:
 
