@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  hyphen:
+    image: nekomeowww/hyphen:latest
+    restart: always
+    ports:
+        - 9010:9010
+    volumes:
+      - ./data:/var/lib/hyphen

@@ -22,6 +22,12 @@ hyphen -l 0.0.0.0:9010 --data ./data/bbolt_data.db
 docker run -it --rm -p 9010:9010 -v <path/to/bbolt/db/data>:/var/lib/hyphen nekomeowww/hyphen:latest
 ```
 
+### Run with docker-compose
+
+```shell
+docker-compose up -d
+```
+
 ## Build on your own
 
 ### Build with go
