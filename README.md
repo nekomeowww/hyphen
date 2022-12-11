@@ -1,7 +1,8 @@
 # hyphen
 
 [![Go Report](https://goreportcard.com/badge/github.com/nekomeowww/hyphen)](https://goreportcard.com/report/github.com/nekomeowww/hyphen)
-[![Unit Tests](https://github.com/nekomeowww/hyphen/actions/workflows/ci.yml/badge.svg)](https://github.com/nekomeowww/hyphen/actions/workflows/ci.yml)
+[![Testing](https://github.com/nekomeowww/hyphen/actions/workflows/ci.yml/badge.svg)](https://github.com/nekomeowww/hyphen/actions/workflows/ci.yml)
+[![Building](https://github.com/nekomeowww/hyphen/actions/workflows/build.yml/badge.svg)](https://github.com/nekomeowww/hyphen/actions/workflows/build.yml)
 
 ---
 
