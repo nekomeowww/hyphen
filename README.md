@@ -52,7 +52,7 @@ docker buildx build --platform <your/arch> -t <tag> --build-arg VERSION=<version
 
 Query Params:
 
-- `url` (required): Full URL
+- `url` `String`  (required): Full URL
 
 Response:
 
@@ -66,7 +66,8 @@ Response:
 
 Query Params:
 
-- `url` (required): Short URL
+- `url` `String` (required): Short URL
+- `redirect` `Boolean`: Redirect to the full URL automatically
 
 Response:
 
