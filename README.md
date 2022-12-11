@@ -60,7 +60,9 @@ Response:
 
 ```json
 {
-  "shortUrl": "2f224d525e"
+  "data": {
+    "shortUrl": "2f224d525e"
+  }
 }
 ```
 
@@ -77,7 +79,9 @@ Response:
 
 ```json
 {
-  "url": "https://example.com/8b4e9413fd13f4a83a2a31c8494347"
+  "data": {
+    "url": "https://example.com/8b4e9413fd13f4a83a2a31c8494347"
+  }
 }
 ```
 
@@ -98,8 +102,10 @@ Response:
 
 ```json
 {
+  "data": {
     "url": "https://example.com/8b4e9413fd13f4a83a2a31c8494347",
     "shortUrl": "2f224d525e",
+  }
 }
 ```
 
@@ -123,6 +129,8 @@ Response:
 
 ```json
 {
+  "data": {
     "ok": true
+  }
 }
 ```
