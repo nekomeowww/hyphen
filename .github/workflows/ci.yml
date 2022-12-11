@@ -27,8 +27,8 @@ jobs:
       - name: Setup Go Cache PATH
         id: go-cache-paths
         run: |
-          echo "::set-output name=go-build::$(go env GOCACHE)"
-          echo "::set-output name=go-mod::$(go env GOMODCACHE)"
+          echo "go-build=$(go env GOCACHE)"  >> $GITHUB_OUTPUT
+          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
 
       # Cache go build cache, used to speedup go test
       - name: Go Build Cache
@@ -48,7 +48,7 @@ jobs:
         run: go install golang.org/x/vuln/cmd/govulncheck@latest
 
       # 代码检查潜在错误
-      - name: Vet (Scan for protential mistakes)
+      - name: Vet (Scan for potential mistakes)
         run: |
           go vet ./...
           govulncheck ./...
@@ -68,8 +68,8 @@ jobs:
       - name: Setup Go Cache PATH
         id: go-cache-paths
         run: |
-          echo "::set-output name=go-build::$(go env GOCACHE)"
-          echo "::set-output name=go-mod::$(go env GOMODCACHE)"
+          echo "go-build=$(go env GOCACHE)"  >> $GITHUB_OUTPUT
+          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
 
       # Cache go build cache, used to speedup go test
       - name: Go Build Cache
@@ -106,8 +106,8 @@ jobs:
       - name: Setup Go Cache PATH
         id: go-cache-paths
         run: |
-          echo "::set-output name=go-build::$(go env GOCACHE)"
-          echo "::set-output name=go-mod::$(go env GOMODCACHE)"
+          echo "go-build=$(go env GOCACHE)"  >> $GITHUB_OUTPUT
+          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
 
       # Cache go build cache, used to speedup go test
       - name: Go Build Cache
