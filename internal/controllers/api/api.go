@@ -1,9 +1,11 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/nekomeowww/hyphen/internal/controllers/api/url"
 	"github.com/nekomeowww/hyphen/internal/lib"
@@ -15,9 +17,10 @@ import (
 type NewAPIParam struct {
 	fx.In
 
-	Logger *lib.Logger
-	Router *router.Router
-	URL    *url.Controller
+	Lifecycle fx.Lifecycle
+	Logger    *lib.Logger
+	Router    *router.Router
+	URL       *url.Controller
 }
 
 type API struct {
@@ -39,6 +42,19 @@ func NewAPI(addr string) func(NewAPIParam) *API {
 			Addr:    addr,
 			Handler: param.Router.Echo,
 		}
+
+		param.Lifecycle.Append(fx.Hook{
+			OnStop: func(ctx context.Context) error {
+				closeCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+				defer cancel()
+				if err := server.Shutdown(closeCtx); err != nil && err != http.ErrServerClosed {
+					param.Logger.Error("shutdown server failed", zap.Error(err))
+					return err
+				}
+
+				return nil
+			},
+		})
 
 		api := &API{Server: server}
 		return api
