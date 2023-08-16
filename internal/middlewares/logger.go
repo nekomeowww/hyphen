@@ -19,6 +19,7 @@ func LogRequest(logger *lib.Logger) echo.MiddlewareFunc {
 				zap.Int64("response_time", int64(values.Latency.Milliseconds())),
 				zap.Int64("status", int64(values.Status)),
 			)
+
 			return nil
 		},
 	})

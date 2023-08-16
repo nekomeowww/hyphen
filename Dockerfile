@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # 设定构建步骤所使用的来源镜像为基于 Alpine 发行版的 Go 1.18 版本镜像
-FROM golang:1.19-alpine as builder
+FROM golang:1.21-alpine as builder
 
 ARG VERSION
 
