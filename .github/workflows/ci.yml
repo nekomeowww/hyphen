@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v3
 
       # 设定 Go 环境
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: "^1.21.0"
           cache: true
@@ -32,14 +32,14 @@ jobs:
 
       # Cache go build cache, used to speedup go test
       - name: Go Build Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.go-cache-paths.outputs.go-build }}
           key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
 
       # Cache go mod cache, used to speedup builds
       - name: Go Mod Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.go-cache-paths.outputs.go-mod }}
           key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@v3
 
       # 设定 Go 环境
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: "^1.21.0"
           cache: true
@@ -73,14 +73,14 @@ jobs:
 
       # Cache go build cache, used to speedup go test
       - name: Go Build Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.go-cache-paths.outputs.go-build }}
           key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
 
       # Cache go mod cache, used to speedup builds
       - name: Go Mod Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.go-cache-paths.outputs.go-mod }}
           key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
@@ -97,7 +97,7 @@ jobs:
 
       # 设定 Go 环境
       - name: Setup Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: "^1.21.0"
           cache: true
@@ -111,14 +111,14 @@ jobs:
 
       # Cache go build cache, used to speedup go test
       - name: Go Build Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.go-cache-paths.outputs.go-build }}
           key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
 
       # Cache go mod cache, used to speedup builds
       - name: Go Mod Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.go-cache-paths.outputs.go-mod }}
           key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
