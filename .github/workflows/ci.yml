@@ -20,29 +20,8 @@ jobs:
       # 设定 Go 环境
       - uses: actions/setup-go@v5
         with:
-          go-version: "^1.23"
+          go-version: "^1.24"
           cache: true
-
-      # Get values for cache paths to be used in later steps
-      - name: Setup Go Cache PATH
-        id: go-cache-paths
-        run: |
-          echo "go-build=$(go env GOCACHE)"  >> $GITHUB_OUTPUT
-          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
-
-      # Cache go build cache, used to speedup go test
-      - name: Go Build Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.go-cache-paths.outputs.go-build }}
-          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-
-      # Cache go mod cache, used to speedup builds
-      - name: Go Mod Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.go-cache-paths.outputs.go-mod }}
-          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
 
       - name: Setup govulncheck
         run: go install golang.org/x/vuln/cmd/govulncheck@latest
@@ -61,29 +40,8 @@ jobs:
       # 设定 Go 环境
       - uses: actions/setup-go@v5
         with:
-          go-version: "^1.23"
+          go-version: "^1.24"
           cache: true
-
-      # Get values for cache paths to be used in later steps
-      - name: Setup Go Cache PATH
-        id: go-cache-paths
-        run: |
-          echo "go-build=$(go env GOCACHE)"  >> $GITHUB_OUTPUT
-          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
-
-      # Cache go build cache, used to speedup go test
-      - name: Go Build Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.go-cache-paths.outputs.go-build }}
-          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-
-      # Cache go mod cache, used to speedup builds
-      - name: Go Mod Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.go-cache-paths.outputs.go-mod }}
-          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
 
       # 测试构建
       - name: Test Build
@@ -99,29 +57,8 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "^1.23"
+          go-version: "^1.24"
           cache: true
-
-      # Get values for cache paths to be used in later steps
-      - name: Setup Go Cache PATH
-        id: go-cache-paths
-        run: |
-          echo "go-build=$(go env GOCACHE)"  >> $GITHUB_OUTPUT
-          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
-
-      # Cache go build cache, used to speedup go test
-      - name: Go Build Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.go-cache-paths.outputs.go-build }}
-          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-
-      # Cache go mod cache, used to speedup builds
-      - name: Go Mod Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.go-cache-paths.outputs.go-mod }}
-          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
 
       # 单元测试
       - name: Unit tests
